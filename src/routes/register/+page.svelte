@@ -9,6 +9,7 @@
   import { authSanitizers, validatePasswordSafety } from "$lib/utils/sanitization.js";
   import { validatePassword, BALANCED_PASSWORD_POLICY } from "$lib/utils/password-validation.js";
   import { validateEmailForAuth } from "$lib/utils/email-validation.js";
+  import Logo from "$lib/components/Logo.svelte";
 
   let { form, data } = $props();
   let loading = $state(false);
@@ -150,10 +151,28 @@
   {/if}
 </svelte:head>
 
-<div class="min-h-screen flex items-center justify-center p-6 bg-muted/20">
-  <Card.Root class="w-full max-w-md">
-    <Card.Header class="text-center">
-      <Card.Title class="text-2xl font-bold">Create your account</Card.Title>
+<div
+  class="relative min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 bg-background overflow-hidden"
+>
+  <!-- Ambient background glow matching landing page design -->
+  <div class="pointer-events-none absolute inset-0 overflow-hidden opacity-40 dark:opacity-30">
+    <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[520px] h-[300px] bg-gradient-to-tr from-indigo-500/25 to-purple-500/25 blur-[90px] rounded-full"></div>
+    <div class="absolute -bottom-32 left-1/2 -translate-x-1/2 w-[520px] h-[300px] bg-gradient-to-br from-purple-500/20 to-indigo-500/20 blur-[90px] rounded-full"></div>
+  </div>
+
+  <!-- Brand Logo header -->
+  <div class="mb-6 z-10 flex flex-col items-center">
+    <a href="/" class="inline-flex items-center gap-2 transition-transform duration-200 hover:scale-[1.02]" title="Go to Home">
+      <Logo alt={data.settings.siteName} />
+    </a>
+  </div>
+
+  <Card.Root class="relative z-10 w-full max-w-[380px] border border-border/80 bg-card/95 backdrop-blur-xl shadow-2xl rounded-2xl">
+    <Card.Header class="text-center pb-2">
+      <Card.Title class="text-2xl font-bold tracking-tight">Create your account</Card.Title>
+      <Card.Description class="text-xs text-muted-foreground mt-1">
+        Join {data.settings.siteName} to get started
+      </Card.Description>
     </Card.Header>
     <Card.Content class="space-y-4">
       {#if data.oauthProviders?.google || data.oauthProviders?.apple || data.oauthProviders?.twitter || data.oauthProviders?.facebook}
@@ -342,15 +361,28 @@
         {/if}
       </form>
     </Card.Content>
-    <Card.Footer class="text-center">
+    <Card.Footer class="flex flex-col gap-2 pt-2 text-center">
       <p class="text-sm text-muted-foreground">
         Already have an account?
-        <a href="/login" class="text-primary hover:underline cursor-pointer"
+        <a href="/login" class="text-primary hover:underline font-medium cursor-pointer"
           >Log in</a
         >
       </p>
     </Card.Footer>
   </Card.Root>
+
+  <!-- Back to Home link -->
+  <div class="mt-6 z-10 text-center">
+    <a
+      href="/"
+      class="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors py-1.5 px-3 rounded-full hover:bg-muted/50"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m15 18-6-6 6-6"/>
+      </svg>
+      Back to website
+    </a>
+  </div>
 </div>
 
 {#if data.turnstile?.enabled}
