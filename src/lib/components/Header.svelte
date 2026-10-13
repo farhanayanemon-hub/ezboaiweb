@@ -115,9 +115,17 @@
       />
     {:else}
       <Button
+        variant="ghost"
+        size="sm"
+        href="/login"
+        class="cursor-pointer"
+      >
+        {m["auth.sign_in"]()}
+      </Button>
+      <Button
         variant="outline"
         size="sm"
-        onclick={() => goto("/register")}
+        href="/register"
         class="cursor-pointer"
       >
         {m["auth.sign_up"]()}

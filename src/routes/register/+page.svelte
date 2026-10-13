@@ -272,9 +272,10 @@
       <form
         method="POST"
         action="?/register"
-        use:enhance={() => {
+        use:enhance={({ cancel }) => {
           if (!validateForm()) {
-            return () => {};
+            cancel();
+            return;
           }
           loading = true;
           return async ({ result, update }) => {
@@ -310,7 +311,7 @@
             id="password"
             name="password"
             type="password"
-            placeholder="Create a password (min. 6 characters)"
+            placeholder="Create a password (min. 8 characters)"
             bind:value={password}
             disabled={loading}
             required

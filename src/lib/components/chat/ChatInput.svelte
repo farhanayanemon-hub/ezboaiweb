@@ -1008,9 +1008,9 @@
       <div class="flex w-full flex-col gap-2 pt-2 sm:flex-row">
         <Button
           class="flex-1"
+          href="/register"
           onclick={() => {
             showLoginDialog = false;
-            goto("/register");
           }}
         >
           Sign up free
@@ -1018,9 +1018,9 @@
         <Button
           variant="outline"
           class="flex-1"
+          href="/login"
           onclick={() => {
             showLoginDialog = false;
-            goto("/login");
           }}
         >
           Log in

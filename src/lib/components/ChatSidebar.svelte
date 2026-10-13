@@ -498,7 +498,7 @@
       <Button
         variant="ghost"
         size="sm"
-        onclick={() => goto("/login")}
+        href="/login"
         class="w-full justify-start mb-2 p-5 rounded-xl cursor-pointer"
       >
         {m["auth.sign_in"]()}

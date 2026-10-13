@@ -54,14 +54,11 @@
     if (target === "home") {
       if (browser) window.scrollTo({ top: 0, behavior: "smooth" });
     } else if (target === "signup") {
-      if (isInIframe()) breakOutToPath("/register");
-      else goto("/register");
+      goto("/register");
     } else if (target === "signin") {
-      if (isInIframe()) breakOutToPath("/login");
-      else goto("/login");
+      goto("/login");
     } else if (target === "newchat") {
-      if (isInIframe()) breakOutToPath("/newchat");
-      else goto("/newchat");
+      goto("/newchat");
     } else {
       scrollToSection(target);
     }
@@ -183,7 +180,7 @@
       <div class="ml-auto hidden md:flex items-center gap-2">
         {#if session?.user}
           <Button
-            onclick={() => handleNavClick("newchat")}
+            href="/newchat"
             class="cursor-pointer btn-gradient text-md font-semibold rounded-full"
           >
             Go to App
@@ -192,13 +189,13 @@
         {:else}
           <Button
             variant="outline"
-            onclick={() => handleNavClick("signin")}
+            href="/login"
             class="cursor-pointer text-md font-medium border-gray-500 text-gray-200 hover:border-indigo-400 hover:text-white rounded-full"
           >
             Sign In
           </Button>
           <Button
-            onclick={() => handleNavClick("signup")}
+            href="/register"
             class="cursor-pointer btn-gradient text-md font-medium rounded-full"
           >
             Sign Up
@@ -246,7 +243,8 @@
           <div class="px-3 py-2 space-y-2">
             {#if session?.user}
               <Button
-                onclick={() => handleNavClick("newchat")}
+                href="/newchat"
+                onclick={() => (mobileMenuOpen = false)}
                 class="w-full btn-gradient rounded-full"
               >
                 Go to App
@@ -255,13 +253,15 @@
             {:else}
               <Button
                 variant="outline"
-                onclick={() => handleNavClick("signin")}
+                href="/login"
+                onclick={() => (mobileMenuOpen = false)}
                 class="w-full border-gray-500 text-gray-200 rounded-full"
               >
                 Sign In
               </Button>
               <Button
-                onclick={() => handleNavClick("signup")}
+                href="/register"
+                onclick={() => (mobileMenuOpen = false)}
                 class="w-full btn-gradient rounded-full"
               >
                 Sign Up
@@ -315,7 +315,7 @@
         <div class="flex">
           <Button
             size="lg"
-            onclick={() => handleNavClick("newchat")}
+            href={session?.user ? "/newchat" : "/register"}
             class="cursor-pointer btn-gradient px-8 py-3 text-lg font-semibold rounded-full"
           >
             {l("hero_cta_text", "Get Started for Free")}
@@ -489,10 +489,7 @@
                 <Button
                   class="cursor-pointer px-4 py-2 text-sm font-medium"
                   variant="outline"
-                  onclick={() => {
-                    if (isInIframe()) breakOutToPath("/register");
-                    else goto("/register");
-                  }}
+                  href="/register"
                 >
                   Sign Up
                   <ArrowRightIcon class="w-3 h-3 ml-2" />
@@ -529,10 +526,7 @@
               <Button
                 class="cursor-pointer w-full mt-auto btn-gradient-outline rounded-lg"
                 variant="ghost"
-                onclick={() => {
-                  if (isInIframe()) breakOutToPath("/pricing");
-                  else goto("/pricing");
-                }}
+                href="/pricing"
               >
                 Get Started
               </Button>
@@ -545,10 +539,7 @@
     <div class="text-center">
       <Button
         variant="ghost"
-        onclick={() => {
-          if (isInIframe()) breakOutToPath("/pricing");
-          else goto("/pricing");
-        }}
+        href="/pricing"
         class="cursor-pointer"
       >
         View detailed pricing
@@ -573,7 +564,7 @@
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
           <Button
             size="lg"
-            onclick={() => handleNavClick("newchat")}
+            href={session?.user ? "/newchat" : "/register"}
             class="cursor-pointer btn-gradient px-8 py-3 text-lg font-semibold rounded-full"
           >
             {l("cta_button_text", "Get Started for Free")}

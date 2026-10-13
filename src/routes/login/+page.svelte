@@ -315,54 +315,62 @@
         </div>
       {/if}
 
-      <div class="space-y-2">
-        <Label for="email">Email</Label>
-        <Input
-          id="email"
-          type="email"
-          placeholder="Enter your email"
-          bind:value={email}
-          onkeydown={handleKeyDown}
-          disabled={loading}
-        />
-      </div>
-      <div class="space-y-2">
-        <div class="flex justify-between items-center">
-          <Label for="password">Password</Label>
-          <a
-            href="/reset-password"
-            class="text-sm text-primary hover:underline cursor-pointer"
-          >
-            Forgot your password?
-          </a>
-        </div>
-        <Input
-          id="password"
-          type="password"
-          placeholder="Enter your password"
-          bind:value={password}
-          onkeydown={handleKeyDown}
-          disabled={loading}
-        />
-      </div>
-      {#if successMessage}
-        <div class="text-sm text-green-600 text-center bg-green-50 p-2 rounded">
-          {successMessage}
-        </div>
-      {/if}
-      {#if error}
-        <div class="text-sm text-destructive text-center">
-          {authSanitizers.errorMessage(error)}
-        </div>
-      {/if}
-
-      <Button
-        onclick={handleSignIn}
-        disabled={loading || !email || !password}
-        class="w-full cursor-pointer btn-gradient rounded-lg"
+      <form
+        onsubmit={(e) => {
+          e.preventDefault();
+          handleSignIn();
+        }}
+        class="space-y-4"
       >
-        {loading ? "Logging in..." : "Log in"}
-      </Button>
+        <div class="space-y-2">
+          <Label for="email">Email</Label>
+          <Input
+            id="email"
+            type="email"
+            placeholder="Enter your email"
+            bind:value={email}
+            disabled={loading}
+            required
+          />
+        </div>
+        <div class="space-y-2">
+          <div class="flex justify-between items-center">
+            <Label for="password">Password</Label>
+            <a
+              href="/reset-password"
+              class="text-sm text-primary hover:underline cursor-pointer"
+            >
+              Forgot your password?
+            </a>
+          </div>
+          <Input
+            id="password"
+            type="password"
+            placeholder="Enter your password"
+            bind:value={password}
+            disabled={loading}
+            required
+          />
+        </div>
+        {#if successMessage}
+          <div class="text-sm text-green-600 text-center bg-green-50 p-2 rounded">
+            {successMessage}
+          </div>
+        {/if}
+        {#if error}
+          <div class="text-sm text-destructive text-center">
+            {authSanitizers.errorMessage(error)}
+          </div>
+        {/if}
+
+        <Button
+          type="submit"
+          disabled={loading}
+          class="w-full cursor-pointer btn-gradient rounded-lg"
+        >
+          {loading ? "Logging in..." : "Log in"}
+        </Button>
+      </form>
 
       <p class="text-xs text-muted-foreground text-center">
         By continuing, you acknowledge {data.settings.siteName}'s
