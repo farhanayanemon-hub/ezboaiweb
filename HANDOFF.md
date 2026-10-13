@@ -7,7 +7,9 @@ Last updated: July 07, 2026. This file lets any developer or AI agent continue w
 - **Live site:** https://ezboai.com (primary). https://www.ezboai.com 308-redirects to it. https://ezboaiweb.vercel.app also serves the app.
 - **Hosting:** Vercel — team `team_GLZNluxStmySEmkyLhDyzbJi`, project `ezboaiweb` (`prj_soYYd0AsfAXsNfexmZdSsT88U7F9`), production branch `main` of this GitHub repo (repoId `1111734803`). Pushing to `main` triggers deploys; a production deploy can also be triggered via `POST /v13/deployments` with `gitSource {type: github, ref: main, repoId}`.
 - **Database:** Neon Postgres. Vercel env `DATABASE_URL` is set (production/preview/development). Schema was created with `drizzle-kit push`. All tables exist; pricing plans auto-seed from code defaults.
-- **Admin account:** `ovirajemon11@gmail.com` (isAdmin=true, email verified). Password is known to the owner (not stored here). Login + `/admin` verified working on ezboai.com.
+- **Admin account:** `ovirajemon11@gmail.com` (isAdmin=true, email verified). Password hash updated to user's desired password. Login + `/admin` verified working on ezboai.com.
+- **Branding & Models:** The 3 internal models have been renamed to `Ezbo 1.0`, `Ezbo 1.0 (Beta)`, and `Ezbo P2 Thinking`. All public branding ("XBrainPro") updated to "Ezbo AI" / "Ezbo".
+- **Auth UI:** `/login` and `/register` have been redesigned with a sleek, compact container (`max-w-[380px]`), brand logo, ambient glow, and back link.
 - **DNS (managed at Hostinger, nameservers ns1/ns2.dns-parking.com):**
   - `A @ -> 76.76.21.21` (Vercel)
   - `CNAME www -> cname.vercel-dns.com`
