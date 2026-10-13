@@ -23,6 +23,7 @@ Last updated: July 07, 2026. This file lets any developer or AI agent continue w
 3. **Build fixes already on main:** uses `@sveltejs/adapter-auto` (adapter-node broke Vercel), and the broken `static/uploads` symlink was removed.
 4. **Hostinger DNS API** (if DNS changes are ever needed again): `https://developers.hostinger.com/api/dns/v1/zones/ezboai.com` with a Bearer API token from hpanel.hostinger.com/profile/api. `DELETE` with `{filters:[{name,type}]}` then `PUT` with `{overwrite:false, zone:[...]}` only touches matching name+type, preserving email records. CNAME contents need a trailing dot.
 5. An empty database causes the homepage to 500. If pointing at a fresh DB, run `drizzle-kit push` with `DATABASE_URL` set first.
+6. **Unlayered CSS override issue:** Never put `* { max-width: 100%; }` as unlayered CSS in `app.css`. In modern CSS Cascade Layers, unlayered styles override all styles inside `@layer utilities` regardless of specificity, breaking Tailwind's `max-w-*` classes. Use `@layer base` and inline styles `style="max-width: 400px; width: 100%;"` on auth card containers.
 
 ## Not yet configured (features that need API keys via /admin or Vercel env)
 
