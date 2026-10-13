@@ -9,7 +9,7 @@ Last updated: July 07, 2026. This file lets any developer or AI agent continue w
 - **Database:** Neon Postgres. Vercel env `DATABASE_URL` is set (production/preview/development). Schema was created with `drizzle-kit push`. All tables exist; pricing plans auto-seed from code defaults.
 - **Admin account:** `ovirajemon11@gmail.com` (isAdmin=true, email verified). Password hash updated to user's desired password. Login + `/admin` verified working on ezboai.com.
 - **Branding & Models:** The 3 internal models have been renamed to `Ezbo 1.0`, `Ezbo 1.0 (Beta)`, and `Ezbo P2 Thinking`. All public branding ("XBrainPro") updated to "Ezbo AI" / "Ezbo".
-- **Auth UI:** `/login` and `/register` have been redesigned with a sleek, compact container (`max-w-[380px]`), brand logo, ambient glow, and back link.
+- **Auth UI:** `/login` and `/register` have been redesigned with a sleek, compact container (`max-w-[380px]`), brand logo, ambient glow, and back link. Auth buttons (Sign In / Sign Up) across the landing page navbar, mobile menu, and dialogs are native `href` anchor buttons for instant, reliable navigation.
 - **DNS (managed at Hostinger, nameservers ns1/ns2.dns-parking.com):**
   - `A @ -> 76.76.21.21` (Vercel)
   - `CNAME www -> cname.vercel-dns.com`
