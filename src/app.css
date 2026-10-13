@@ -533,24 +533,27 @@
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
-/* XBRAIN_MOBILE_FIT — prevent horizontal overflow + double-tap zoom on mobile */
-html, body {
-  max-width: 100vw;
-  overflow-x: hidden;
-  -webkit-text-size-adjust: 100%;
-  text-size-adjust: 100%;
-  touch-action: manipulation; /* disables double-tap zoom but keeps pan/scroll */
-}
+/* MOBILE_FIT — prevent horizontal overflow + double-tap zoom on mobile */
+@layer base {
+  html, body {
+    max-width: 100vw;
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    touch-action: manipulation; /* disables double-tap zoom but keeps pan/scroll */
+  }
 
-/* Prevent any element from forcing horizontal scroll */
-* {
-  max-width: 100%;
-}
+  /* Media elements shouldn't cause overflow */
+  img, video, canvas, svg {
+    max-width: 100%;
+    height: auto;
+  }
 
-/* Long words / URLs wrap instead of overflowing */
-p, span, div, h1, h2, h3, h4, h5, h6, li, td, th, a, label, button {
-  overflow-wrap: break-word;
-  word-wrap: break-word;
+  /* Long words / URLs wrap instead of overflowing */
+  p, span, div, h1, h2, h3, h4, h5, h6, li, td, th, a, label, button {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+  }
 }
 
 /* iOS safe-area padding for notched devices */

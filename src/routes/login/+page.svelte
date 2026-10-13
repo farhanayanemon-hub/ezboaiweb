@@ -206,20 +206,22 @@
     <div class="absolute -bottom-32 left-1/2 -translate-x-1/2 w-[520px] h-[300px] bg-gradient-to-br from-purple-500/20 to-indigo-500/20 blur-[90px] rounded-full"></div>
   </div>
 
-  <!-- Brand Logo header -->
-  <div class="mb-6 z-10 flex flex-col items-center">
-    <a href="/" class="inline-flex items-center gap-2 transition-transform duration-200 hover:scale-[1.02]" title="Go to Home">
-      <Logo alt={data.settings.siteName} />
-    </a>
-  </div>
+  <!-- Constrained Card Container (guaranteed <= 400px on desktop) -->
+  <div class="relative z-10 w-full max-w-[400px] flex flex-col items-center mx-auto" style="max-width: 400px; width: 100%;">
+    <!-- Brand Logo header -->
+    <div class="mb-6 flex flex-col items-center">
+      <a href="/" class="inline-flex items-center gap-2 transition-transform duration-200 hover:scale-[1.02]" title="Go to Home">
+        <Logo alt={data.settings.siteName} />
+      </a>
+    </div>
 
-  <Card.Root class="relative z-10 w-full max-w-[380px] border border-border/80 bg-card/95 backdrop-blur-xl shadow-2xl rounded-2xl">
-    <Card.Header class="text-center pb-2">
-      <Card.Title class="text-2xl font-bold tracking-tight">Log in</Card.Title>
-      <Card.Description class="text-xs text-muted-foreground mt-1">
-        Welcome back! Please enter your details.
-      </Card.Description>
-    </Card.Header>
+    <Card.Root class="w-full border border-border/80 bg-card/95 backdrop-blur-xl shadow-2xl rounded-2xl" style="max-width: 400px; width: 100%;">
+      <Card.Header class="text-center pb-2">
+        <Card.Title class="text-2xl font-bold tracking-tight">Log in</Card.Title>
+        <Card.Description class="text-xs text-muted-foreground mt-1">
+          Welcome back! Please enter your details.
+        </Card.Description>
+      </Card.Header>
     <Card.Content class="space-y-4">
       {#if data.oauthProviders?.google || data.oauthProviders?.apple || data.oauthProviders?.twitter || data.oauthProviders?.facebook}
         <!-- OAuth Provider Buttons -->
@@ -494,16 +496,17 @@
     </Card.Root>
   {/if}
 
-  <!-- Back to Home link -->
-  <div class="mt-6 z-10 text-center">
-    <a
-      href="/"
-      class="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors py-1.5 px-3 rounded-full hover:bg-muted/50"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="m15 18-6-6 6-6"/>
-      </svg>
-      Back to website
-    </a>
+    <!-- Back to Home link -->
+    <div class="mt-6 text-center">
+      <a
+        href="/"
+        class="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors py-1.5 px-3 rounded-full hover:bg-muted/50 cursor-pointer"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m15 18-6-6 6-6"/>
+        </svg>
+        Back to website
+      </a>
+    </div>
   </div>
 </div>
