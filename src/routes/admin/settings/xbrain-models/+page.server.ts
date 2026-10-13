@@ -33,7 +33,7 @@ export const actions: Actions = {
       }
       const routerModel = ((data.get('routerModel') as string) || DEFAULT_ROUTER_MODEL).trim();
       await saveXBrainConfig(configs, routerModel);
-      return { success: true, message: 'XBrain model settings saved successfully.' };
+      return { success: true, message: 'Ezbo model settings saved successfully.' };
     } catch (e: any) {
       return fail(500, { error: e?.message || 'Failed to save settings' });
     }

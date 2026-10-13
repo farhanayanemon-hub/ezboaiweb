@@ -618,7 +618,7 @@
 <footer class="border-t py-8 px-4" style="background-color: #101011">
   <div class="container mx-auto text-center">
     <p class="text-sm text-muted-foreground">
-      {l("footer_text", "© 2025 XBrainPro. All rights reserved.")}
+      {l("footer_text", "© 2026 Ezbo AI. All rights reserved.")}
     </p>
   </div>
 </footer>

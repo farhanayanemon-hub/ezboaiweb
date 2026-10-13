@@ -293,7 +293,7 @@
             <Input
               id="footer_text"
               name="footer_text"
-              value={getVal("footer_text", "© 2025 XBrainPro. All rights reserved.")}
+              value={getVal("footer_text", "© 2026 Ezbo AI. All rights reserved.")}
             />
           </div>
         </Card.Content>

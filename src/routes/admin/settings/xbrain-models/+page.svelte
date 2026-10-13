@@ -10,9 +10,9 @@
   let { data, form } = $props();
 
   const TIERS = [
-    { id: 'free', label: 'XBrain 1.0', accent: 'Free / Fast' },
-    { id: 'pro', label: 'XBrain 1.0 (Beta)', accent: 'Premium' },
-    { id: 'thinking', label: 'XBrain P2 Thinking', accent: 'Deep Reasoning' },
+    { id: 'free', label: 'Ezbo 1.0', accent: 'Free / Fast' },
+    { id: 'pro', label: 'Ezbo 1.0 (Beta)', accent: 'Premium' },
+    { id: 'thinking', label: 'Ezbo P2 Thinking', accent: 'Deep Reasoning' },
   ] as const;
   const CATS = ['code','math','creative','factual','conversation','analysis','vision'] as const;
 
@@ -28,13 +28,13 @@
   }
 </script>
 
-<svelte:head><title>XBrain Models - Admin</title></svelte:head>
+<svelte:head><title>Ezbo Models - Admin</title></svelte:head>
 
 <div class="space-y-6">
   <div>
-    <h2 class="text-2xl font-bold">XBrain Models</h2>
+    <h2 class="text-2xl font-bold">Ezbo Models</h2>
     <p class="text-sm text-muted-foreground mt-1">
-      Control system prompts, routing, max tokens, temperature, and underlying models for the 3 XBrain tiers.
+      Control system prompts, routing, max tokens, temperature, and underlying models for the 3 Ezbo tiers.
       Changes apply immediately (cache TTL ~30 sec).
     </p>
   </div>
@@ -80,7 +80,7 @@
                 {t.label}
                 <span class="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground font-normal">{t.accent}</span>
               </Card.Title>
-              <Card.Description>Model ID: <code>ezbo/{t.id === 'free' ? 'ezbo-1.0' : t.id === 'pro' ? 'ezbo-1.0-pro' : 'xbrain-p2-thinking'}</code></Card.Description>
+              <Card.Description>Model ID: <code>ezbo/{t.id === 'free' ? 'ezbo-1.0' : t.id === 'pro' ? 'ezbo-1.0-pro' : 'ezbo-p2-thinking'}</code></Card.Description>
             </div>
             <div class="flex items-center gap-3">
               <span class="text-sm">Enabled</span>

@@ -23,5 +23,7 @@ export const providerConfig: Record<string, ProviderIconConfig> = {
 	Tencent: { iconPath: "/ai-provider-icons/tencent-favicon.png" },
 	Pixverse: { iconPath: "/ai-provider-icons/pixverse-favicon.jpg" },
 	MiniMax: { iconPath: "/ai-provider-icons/minimax-favicon.png" },
-  XBrainPro: { iconPath: "/xbrain-icon.svg" }
+	XBrainPro: { iconPath: "/xbrain-icon.svg" },
+	Ezbo: { iconPath: "/xbrain-icon.svg" },
+	EzboAI: { iconPath: "/xbrain-icon.svg" }
 };

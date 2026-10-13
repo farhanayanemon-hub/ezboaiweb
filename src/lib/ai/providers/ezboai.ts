@@ -11,12 +11,14 @@ import { loadXBrainConfig, DEFAULTS, type Category, type Tier } from '../../serv
 
 const EZBO_MODEL_1 = 'ezbo/ezbo-1.0';
 const EZBO_MODEL_1_PRO = 'ezbo/ezbo-1.0-pro';
-const EZBO_MODEL_THINKING = 'ezbo/xbrain-p2-thinking';
+const EZBO_MODEL_THINKING = 'ezbo/ezbo-p2-thinking';
+const EZBO_MODEL_THINKING_LEGACY = 'ezbo/xbrain-p2-thinking';
 
 const TIER_BY_MODEL: Record<string, Tier> = {
 	[EZBO_MODEL_1]: 'free',
 	[EZBO_MODEL_1_PRO]: 'pro',
 	[EZBO_MODEL_THINKING]: 'thinking',
+	[EZBO_MODEL_THINKING_LEGACY]: 'thinking',
 };
 
 function tierOf(name: string): Tier | null {
@@ -39,7 +41,7 @@ async function buildModels(): Promise<AIModelConfig[]> {
 		out.push({
 			name,
 			displayName: c.displayName,
-			provider: 'XBrainPro',
+			provider: 'Ezbo',
 			maxTokens: c.maxTokens,
 			supportsStreaming: true,
 			supportsFunctions: true,
@@ -58,7 +60,7 @@ const STATIC_FALLBACK_MODELS: AIModelConfig[] = (['free','pro','thinking'] as Ti
 	return {
 		name,
 		displayName: c.displayName,
-		provider: 'XBrainPro',
+		provider: 'Ezbo',
 		maxTokens: c.maxTokens,
 		supportsStreaming: true,
 		supportsFunctions: true,
@@ -79,42 +81,44 @@ function lastUserText(messages: AIMessage[]): string {
 }
 
 function hasImageContent(messages: AIMessage[]): boolean {
-	return messages.some(
-		(m) =>
-			!!m.imageId ||
-			!!m.imageData ||
-			(Array.isArray(m.imageIds) && m.imageIds.length > 0) ||
-			(Array.isArray(m.images) && m.images.length > 0)
-	);
-}
-
-function isEzboModel(name: string): boolean {
-	return !!tierOf(name);
-}
-
-function injectIdentity(messages: AIMessage[], systemPrompt: string): AIMessage[] {
-	return [{ role: 'system', content: systemPrompt }, ...messages];
+	for (const msg of messages) {
+		if (Array.isArray(msg?.content)) {
+			for (const part of msg.content) {
+				if ((part as any)?.type === 'image_url') return true;
+			}
+		}
+	}
+	return false;
 }
 
 function parseCategory(raw: string): Category | null {
-	if (!raw) return null;
-	const tryJson = (s: string): Category | null => {
-		try {
-			const obj = JSON.parse(s);
-			const c = (obj?.category || obj?.cat || '').toString().toLowerCase();
-			if (['code','math','creative','factual','conversation','analysis','vision'].includes(c)) return c as Category;
-		} catch { /* ignore */ }
-		return null;
-	};
-	let cat = tryJson(raw.trim());
-	if (cat) return cat;
-	const match = raw.match(/\{[\s\S]*?\}/);
-	if (match) { cat = tryJson(match[0]); if (cat) return cat; }
-	const lower = raw.toLowerCase();
-	for (const c of ['code','math','creative','factual','conversation','analysis','vision'] as Category[]) {
-		if (lower.includes(c)) return c;
+	const cleaned = raw.replace(/^```[a-z]*\s*|\s*```$/gi, '').trim();
+	try {
+		const parsed = JSON.parse(cleaned);
+		const cat = String(parsed?.category || '').toLowerCase().trim();
+		if (['code','math','creative','factual','conversation','analysis','vision'].includes(cat)) {
+			return cat as Category;
+		}
+	} catch {}
+	const match = cleaned.match(/"category"\s*:\s*"([a-z]+)"/i);
+	if (match && ['code','math','creative','factual','conversation','analysis','vision'].includes(match[1].toLowerCase())) {
+		return match[1].toLowerCase() as Category;
 	}
 	return null;
+}
+
+function injectIdentity(messages: AIMessage[], systemPrompt: string): AIMessage[] {
+	const out = [...messages];
+	const sysIdx = out.findIndex((m) => m.role === 'system');
+	if (sysIdx >= 0) {
+		out[sysIdx] = {
+			...out[sysIdx],
+			content: `${systemPrompt}\n\n${out[sysIdx].content}`,
+		};
+	} else {
+		out.unshift({ role: 'system', content: systemPrompt });
+	}
+	return out;
 }
 
 async function routeQuestion(userText: string, hasImage: boolean, routerModel: string): Promise<Category> {
@@ -134,7 +138,7 @@ async function routeQuestion(userText: string, hasImage: boolean, routerModel: s
 		})) as AIResponse;
 		return parseCategory((result?.content || '').toString()) || 'conversation';
 	} catch (err) {
-		console.warn('[XBrainPro] router classification failed, using default:', err);
+		console.warn('[Ezbo] router classification failed, using default:', err);
 		return 'conversation';
 	}
 }
@@ -146,7 +150,7 @@ async function* scrubStream(source: AsyncIterableIterator<AIStreamChunk>): Async
 async function dispatch(params: ChatCompletionParams, isMultimodal: boolean): Promise<AIResponse | AsyncIterableIterator<AIStreamChunk>> {
 	const { model, messages, stream } = params;
 	const tier = tierOf(model);
-	if (!tier) throw new Error(`XBrainPro provider does not handle model: ${model}`);
+	if (!tier) throw new Error(`Ezbo provider does not handle model: ${model}`);
 
 	const { configs, routerModel } = await loadXBrainConfig();
 	const cfg = configs[tier];
@@ -176,7 +180,7 @@ async function dispatch(params: ChatCompletionParams, isMultimodal: boolean): Pr
 }
 
 export const ezboaiProvider: AIProvider = {
-	name: 'XBrainPro',
+	name: 'Ezbo',
 	models: STATIC_FALLBACK_MODELS,
 	async chat(params) { return dispatch(params, false); },
 	async chatMultimodal(params) {

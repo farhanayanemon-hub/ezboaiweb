@@ -63,7 +63,7 @@
 
   function skipPersonalization() {
     open = false;
-    toast.success("You can personalize XBrainPro any time from Settings.");
+    toast.success("You can personalize Ezbo any time from Settings.");
   }
 </script>
 
@@ -97,7 +97,7 @@
           </svg>
         </div>
         <Dialog.Header class="space-y-2">
-          <Dialog.Title class="text-xl">Welcome to XBrainPro</Dialog.Title>
+          <Dialog.Title class="text-xl">Welcome to Ezbo AI</Dialog.Title>
           <Dialog.Description>What is your name?</Dialog.Description>
         </Dialog.Header>
         <form onsubmit={submitName} class="w-full space-y-3 pt-1">
@@ -139,7 +139,7 @@
             Nice to meet you{savedName ? `, ${savedName}` : ""}!
           </Dialog.Title>
           <Dialog.Description>
-            Want to personalize XBrainPro so it answers in a way that fits you best?
+            Want to personalize Ezbo so it answers in a way that fits you best?
             You can tell it about your profession and how you'd like it to talk
             to you.
           </Dialog.Description>

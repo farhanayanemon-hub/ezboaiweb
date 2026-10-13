@@ -80,7 +80,7 @@
     },
     {
       id: "xbrain-models",
-      label: "XBrain Models",
+      label: "Ezbo Models",
       path: "/admin/settings/xbrain-models",
       icon: BrainIcon,
     },

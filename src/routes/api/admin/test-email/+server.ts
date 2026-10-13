@@ -52,7 +52,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 					<tr><td style="padding:4px 0;font-weight:600;color:#111827;">Sent at</td><td>${now}</td></tr>
 				</table>
 				<hr style="border:none;border-top:1px solid #e5e7eb;margin:20px 0 12px;" />
-				<p style="margin:0;color:#9ca3af;font-size:11px;">Sent from XBrainPro Admin</p>
+				<p style="margin:0;color:#9ca3af;font-size:11px;">Sent from Ezbo AI Admin</p>
 			</div>
 		`,
 		text: `SMTP Test Successful. Your SMTP settings are configured correctly.\n\nHost: ${settings.smtp_host}\nPort: ${settings.smtp_port || '587'}\nSent at: ${now}`,
