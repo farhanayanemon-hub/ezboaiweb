@@ -11,6 +11,8 @@ import { securityHeaders } from '$lib/server/security-headers.js'
 import { authRateLimitMiddleware } from '$lib/server/auth-middleware.js'
 import { OpayService } from '$lib/server/opaybd.js'
 import { runAutoMigrations } from '$lib/server/auto-migrate.js'
+import jwt from 'jsonwebtoken'
+import { env } from '$env/dynamic/private'
 
 runAutoMigrations().catch(e => console.error('[Startup] Auto-migration failed:', e));
 
@@ -149,6 +151,55 @@ const storageWarmingHandle: Handle = async ({ event, resolve }) => {
 // - Complex admin routes: Improved from 2-3 DB calls to 1 DB call
 //
 const enhancedAuthHandle: Handle = async ({ event, resolve }) => {
+  // Mobile Bearer Token Authentication Bridge
+  const authHeader = event.request.headers.get('authorization') || event.request.headers.get('Authorization');
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const bearerToken = authHeader.substring(7).trim();
+    if (bearerToken) {
+      try {
+        const secret = env.AUTH_SECRET || 'ezboai-auth-secret';
+        const decoded = jwt.verify(bearerToken, secret) as any;
+        const userId = decoded?.sub || decoded?.id;
+        if (userId) {
+          const [userData] = await db
+            .select({
+              id: users.id,
+              planTier: users.planTier,
+              isAdmin: users.isAdmin,
+              email: users.email,
+              name: users.name,
+              image: users.image
+            })
+            .from(users)
+            .where(eq(users.id, userId))
+            .limit(1);
+
+          if (userData) {
+            const mobileSession: Session = {
+              user: {
+                id: userData.id,
+                email: userData.email,
+                name: userData.name,
+                image: userData.image,
+                planTier: (userData.planTier || 'free') as any,
+                isAdmin: userData.isAdmin,
+              },
+              expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+            };
+
+            event.locals.auth = async () => mobileSession;
+            (event.locals as any).getSession = async () => mobileSession;
+            return resolve(event);
+          }
+        }
+      } catch (err) {
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('[Auth] Mobile Bearer token verification failed:', (err as Error).message);
+        }
+      }
+    }
+  }
+
   // First run the original auth handle to set up auth
   const response = await authHandle({
     event, resolve: async (event) => {

@@ -639,7 +639,7 @@ export const manualOrders = pgTable("manual_orders", {
         planName: text("planName"),
         planTier: text("planTier", { enum: ["free", "starter", "pro", "advanced"] }),
         creditPlanId: text("creditPlanId"),
-        gateway: text("gateway", { enum: ["paypal", "wise", "skrill", "binance", "bybit", "manual", "stripe", "opaybd"] }).notNull().default("manual"),
+        gateway: text("gateway", { enum: ["paypal", "wise", "skrill", "binance", "bybit", "manual", "stripe", "opaybd", "bkash", "nagad", "rocket"] }).notNull().default("manual"),
         amount: integer("amount").notNull(),
         currency: text("currency").notNull().default("usd"),
         status: text("status", { enum: ["new", "pending", "completed", "cancelled"] }).notNull().default("new"),

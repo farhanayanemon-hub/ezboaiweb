@@ -10,7 +10,7 @@ const Body = z.object({
   // Either planId (subscription) OR creditPlanId (credit pack) must be provided
   planId: z.string().min(1).optional(),
   creditPlanId: z.string().min(1).optional(),
-  gateway: z.enum(['paypal', 'wise', 'skrill', 'binance', 'bybit']),
+  gateway: z.enum(['paypal', 'wise', 'skrill', 'binance', 'bybit', 'bkash', 'nagad', 'rocket', 'manual']),
   txnReference: z.string().min(2).max(200),
   senderInfo: z.string().max(200).nullable().optional(),
   userNotes: z.string().max(1000).nullable().optional(),
