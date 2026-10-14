@@ -20,6 +20,7 @@
   import PromptTemplates from "./chat/PromptTemplates.svelte";
   import MessagesList from "./chat/MessagesList.svelte";
   import ChatInput from "./chat/ChatInput.svelte";
+  import AppDownloadBanner from "$lib/components/AppDownloadBanner.svelte";
   import { VoiceModeState } from "./chat/voice-mode-state.svelte.js";
 
   // Conversation components for auto-scroll management
@@ -111,6 +112,9 @@
 
 <!-- Main content area -->
 <main class="flex flex-col h-full w-full min-w-0 overflow-hidden">
+  <!-- Top App Download Banner -->
+  <AppDownloadBanner />
+
   <!-- Main chat area with auto-scroll management -->
   <Conversation class="flex-1 min-h-0">
     <ConversationContent
