@@ -4,14 +4,13 @@
 
   const STORAGE_KEY = 'ezboai_hide_app_download_banner';
 
-  let isVisible = $state(false);
+  let isVisible = $state(true);
   let isDownloading = $state(false);
 
   $effect(() => {
     if (browser) {
-      const isDismissed = localStorage.getItem(STORAGE_KEY);
-      if (!isDismissed) {
-        isVisible = true;
+      if (localStorage.getItem(STORAGE_KEY) === 'true') {
+        isVisible = false;
       }
     }
   });
