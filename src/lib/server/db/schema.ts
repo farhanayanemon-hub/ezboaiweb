@@ -112,6 +112,7 @@ export const otpCodes = pgTable(
                 email: text("email").notNull(),
                 code: text("code").notNull(),
                 purpose: text("purpose").notNull().default("registration"),
+                metadata: text("metadata"), // JSON string containing pending registration details (e.g. name, passwordHash)
                 attempts: integer("attempts").notNull().default(0),
                 maxAttempts: integer("max_attempts").notNull().default(5),
                 expires: timestamp("expires", { mode: "date" }).notNull(),

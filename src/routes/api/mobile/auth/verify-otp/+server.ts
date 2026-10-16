@@ -34,32 +34,45 @@ export const POST: RequestHandler = async ({ request }) => {
 			return json({ error: result.error || 'Invalid or expired verification code' }, { status: 400 });
 		}
 
-		const [user] = await db
+		let userRecord: typeof users.$inferSelect;
+		const [existingUser] = await db
 			.select()
 			.from(users)
 			.where(eq(users.email, email))
 			.limit(1);
 
-		if (!user) {
-			return json({ error: 'User not found' }, { status: 404 });
+		if (!existingUser) {
+			const metadata = result.metadata || {};
+			const displayName = metadata.name || email.split('@')[0];
+			const passwordHash = metadata.passwordHash || null;
+
+			const [newUser] = await db.insert(users).values({
+				email: email,
+				password: passwordHash,
+				name: displayName,
+				planTier: 'free',
+				emailVerified: new Date(),
+			}).returning();
+
+			userRecord = newUser;
+		} else {
+			userRecord = existingUser;
+			await db.update(users)
+				.set({ emailVerified: new Date() })
+				.where(eq(users.id, userRecord.id));
 		}
 
-		// Update user emailVerified
-		await db.update(users)
-			.set({ emailVerified: new Date() })
-			.where(eq(users.id, user.id));
-
-		SecurityLogger.emailVerificationSuccess(user.id, email);
+		SecurityLogger.emailVerificationSuccess(userRecord.id, email);
 
 		const secret = env.AUTH_SECRET || 'ezboai-auth-secret';
 		const token = jwt.sign(
 			{
-				sub: user.id,
-				id: user.id,
-				email: user.email,
-				name: user.name,
-				isAdmin: user.isAdmin,
-				planTier: user.planTier || 'free'
+				sub: userRecord.id,
+				id: userRecord.id,
+				email: userRecord.email,
+				name: userRecord.name,
+				isAdmin: userRecord.isAdmin,
+				planTier: userRecord.planTier || 'free'
 			},
 			secret,
 			{ expiresIn: '30d' }
@@ -67,7 +80,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		let credits = { text: 0, image: 0, video: 0, audio: 0 };
 		try {
-			credits = await CreditService.getUserCredits(user.id);
+			credits = await CreditService.getUserCredits(userRecord.id);
 		} catch (creditErr) {
 			console.warn('[Mobile OTP] Failed to fetch credits:', creditErr);
 		}
@@ -76,15 +89,15 @@ export const POST: RequestHandler = async ({ request }) => {
 			success: true,
 			token,
 			user: {
-				id: user.id,
-				name: user.name,
-				email: user.email,
-				image: user.image,
-				planTier: user.planTier || 'free',
-				isAdmin: user.isAdmin,
-				profession: user.profession,
-				personalInstructions: user.personalInstructions,
-				subscriptionStatus: user.subscriptionStatus
+				id: userRecord.id,
+				name: userRecord.name,
+				email: userRecord.email,
+				image: userRecord.image,
+				planTier: userRecord.planTier || 'free',
+				isAdmin: userRecord.isAdmin,
+				profession: userRecord.profession,
+				personalInstructions: userRecord.personalInstructions,
+				subscriptionStatus: userRecord.subscriptionStatus
 			},
 			credits
 		});

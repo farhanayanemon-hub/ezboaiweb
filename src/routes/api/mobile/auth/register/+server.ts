@@ -48,104 +48,44 @@ export const POST: RequestHandler = async ({ request }) => {
 		const validatedEmail = emailValidation.normalizedEmail;
 		const displayName = rawName?.trim() || validatedEmail.split('@')[0];
 
-		// Check if user already exists
+		// Check if user already exists and is verified
 		const existingUser = await db.select().from(users).where(eq(users.email, validatedEmail)).limit(1);
-		const otpEnabled = await isOtpVerificationEnabled();
 
 		if (existingUser.length > 0) {
 			const existing = existingUser[0];
-			if (!existing.emailVerified && otpEnabled) {
-				try {
-					const otpCode = await OtpService.createOtp(validatedEmail, 'registration');
-					await sendOtpEmail({
-						email: validatedEmail,
-						name: existing.name || displayName,
-						otpCode,
-						expiryMinutes: OtpService.getExpiryMinutes(),
-					});
-				} catch (e) {
-					console.error('[Mobile Register] Failed to resend OTP:', e);
-				}
-				return json({
-					requiresOtp: true,
-					email: validatedEmail,
-					message: 'Account pending verification. Verification code sent to your email.'
-				});
+			if (existing.emailVerified) {
+				SecurityLogger.registrationFailure(validatedEmail, 'Email already exists', clientIP);
+				return json({ error: 'An account with this email address already exists' }, { status: 400 });
 			}
-
-			SecurityLogger.registrationFailure(validatedEmail, 'Email already exists', clientIP);
-			return json({ error: 'An account with this email address already exists' }, { status: 400 });
 		}
 
 		// Hash password
 		const hashedPassword = await bcrypt.hash(rawPassword, 12);
 
-		// Insert user
-		const [newUser] = await db.insert(users).values({
-			email: validatedEmail,
-			password: hashedPassword,
+		// Store registration details in OTP metadata - deferred user creation
+		const otpCode = await OtpService.createOtp(validatedEmail, 'registration', {
 			name: displayName,
-			planTier: 'free',
-		}).returning({
-			id: users.id,
-			email: users.email,
-			name: users.name,
-			planTier: users.planTier,
-			isAdmin: users.isAdmin,
+			passwordHash: hashedPassword,
 		});
 
-		SecurityLogger.registrationSuccess(newUser.id, newUser.email!, clientIP);
-
-		if (otpEnabled) {
-			try {
-				const otpCode = await OtpService.createOtp(newUser.email!, 'registration');
-				await sendOtpEmail({
-					email: newUser.email!,
-					name: newUser.name || displayName,
-					otpCode,
-					expiryMinutes: OtpService.getExpiryMinutes(),
-				});
-				SecurityLogger.emailVerificationSent(newUser.email!, newUser.id);
-			} catch (emailErr) {
-				console.error('[Mobile Register] Failed to send OTP email:', emailErr);
-			}
-
-			return json({
-				requiresOtp: true,
-				email: newUser.email,
-				message: 'Registration successful! Verification code sent to your email.'
+		try {
+			await sendOtpEmail({
+				email: validatedEmail,
+				name: displayName,
+				otpCode,
+				expiryMinutes: OtpService.getExpiryMinutes(),
 			});
-		} else {
-			await db.update(users)
-				.set({ emailVerified: new Date() })
-				.where(eq(users.id, newUser.id));
-
-			const secret = env.AUTH_SECRET || 'ezboai-auth-secret';
-			const token = jwt.sign(
-				{
-					sub: newUser.id,
-					id: newUser.id,
-					email: newUser.email,
-					name: newUser.name,
-					isAdmin: newUser.isAdmin,
-					planTier: newUser.planTier || 'free'
-				},
-				secret,
-				{ expiresIn: '30d' }
-			);
-
-			return json({
-				token,
-				user: {
-					id: newUser.id,
-					name: newUser.name,
-					email: newUser.email,
-					planTier: newUser.planTier || 'free',
-					isAdmin: newUser.isAdmin,
-				},
-				credits: { text: 0, image: 0, video: 0, audio: 0 }
-			});
+			SecurityLogger.emailVerificationSent(validatedEmail, 'pending_mobile_otp');
+			console.log(`[Mobile Register] OTP verification email sent to ${validatedEmail}`);
+		} catch (emailErr) {
+			console.error('[Mobile Register] Failed to send OTP email:', emailErr);
 		}
+
+		return json({
+			requiresOtp: true,
+			email: validatedEmail,
+			message: 'Verification code sent to your email.'
+		});
 
 	} catch (error) {
 		console.error('[Mobile Register] Error:', error);

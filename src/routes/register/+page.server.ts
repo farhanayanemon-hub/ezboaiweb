@@ -133,71 +133,40 @@ export const actions: Actions = {
       // Check if user already exists
       const existingUser = await db.select().from(users).where(eq(users.email, validatedEmail)).limit(1)
 
-      const otpEnabled = await isOtpVerificationEnabled();
-
       if (existingUser.length > 0) {
         const existing = existingUser[0]
-        if (!existing.emailVerified && otpEnabled) {
-          try {
-            const otpCode = await OtpService.createOtp(validatedEmail, 'registration')
-            await sendOtpEmail({
-              email: validatedEmail,
-              name: existing.name || validatedEmail.split('@')[0],
-              otpCode,
-              expiryMinutes: OtpService.getExpiryMinutes(),
-            })
-          } catch (e) {
-            console.error('[Registration] Failed to resend OTP for unverified user:', e)
-          }
-          throw redirect(302, `/verify-otp?email=${encodeURIComponent(validatedEmail)}`)
+        if (existing.emailVerified) {
+          SecurityLogger.registrationFailure(validatedEmail, 'Account already exists', clientIP);
+          return createAuthError(AUTH_STATUS_CODES.BAD_REQUEST, AUTH_ERRORS.EMAIL_ALREADY_EXISTS);
         }
-        SecurityLogger.registrationFailure(validatedEmail, 'Account already exists', clientIP);
-        return createAuthError(AUTH_STATUS_CODES.BAD_REQUEST, AUTH_ERRORS.EMAIL_ALREADY_EXISTS);
       }
-      
-      // Hash password (use the original raw password as it passed validation)
+
+      // Hash password
       const hashedPassword = await bcrypt.hash(rawPassword, 12)
-      
-      // Create user
-      const newUser = await db.insert(users).values({
-        email: validatedEmail,
-        password: hashedPassword,
-        name: validatedEmail.split('@')[0], // Use email prefix as default name
-        planTier: 'free', // Set new users to free plan by default
-      }).returning({ id: users.id, email: users.email, name: users.name })
-      
-      if (newUser.length > 0) {
-        const userData = newUser[0]
-        SecurityLogger.registrationSuccess(userData.id, userData.email!, clientIP);
+      const rawName = data.get('name') as string
+      const displayName = rawName?.trim() || validatedEmail.split('@')[0]
 
-        if (otpEnabled) {
-          try {
-            const otpCode = await OtpService.createOtp(userData.email!, 'registration')
+      // Store pending registration data in OTP metadata - deferred user creation
+      const otpCode = await OtpService.createOtp(validatedEmail, 'registration', {
+        name: displayName,
+        passwordHash: hashedPassword,
+      })
 
-            await sendOtpEmail({
-              email: userData.email!,
-              name: userData.name || userData.email!.split('@')[0],
-              otpCode,
-              expiryMinutes: OtpService.getExpiryMinutes(),
-            })
-            SecurityLogger.emailVerificationSent(userData.email!, userData.id);
-            console.log(`[Registration] OTP verification email sent`)
-          } catch (emailError) {
-            console.error(`[Registration] Failed to send OTP email:`, emailError)
-            SecurityLogger.emailVerificationFailure(userData.email!, 'Failed to send OTP email');
-          }
-        } else {
-          await db.update(users)
-            .set({ emailVerified: new Date() })
-            .where(eq(users.id, userData.id));
-          console.log(`[Registration] OTP disabled - auto-verified user`)
-        }
+      try {
+        await sendOtpEmail({
+          email: validatedEmail,
+          name: displayName,
+          otpCode,
+          expiryMinutes: OtpService.getExpiryMinutes(),
+        })
+        SecurityLogger.emailVerificationSent(validatedEmail, 'pending_otp');
+        console.log(`[Registration] OTP verification email sent to ${validatedEmail}`)
+      } catch (emailError) {
+        console.error(`[Registration] Failed to send OTP email:`, emailError)
+        SecurityLogger.emailVerificationFailure(validatedEmail, 'Failed to send OTP email');
       }
-      
-      if (otpEnabled) {
-        throw redirect(302, `/verify-otp?email=${encodeURIComponent(validatedEmail)}`)
-      }
-      throw redirect(302, '/login?registered=true')
+
+      throw redirect(302, `/verify-otp?email=${encodeURIComponent(validatedEmail)}`)
       
     } catch (error) {
       // Re-throw redirects (SvelteKit redirects have a status property)

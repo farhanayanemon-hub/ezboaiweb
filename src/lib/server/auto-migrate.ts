@@ -26,6 +26,7 @@ export async function runAutoMigrations(): Promise<void> {
       { table: 'user', column: 'profession', type: 'text' },
       { table: 'user', column: 'personalInstructions', type: 'text' },
       { table: 'pricing_plan', column: 'voiceGenerationLimit', type: 'integer' },
+      { table: 'otp_code', column: 'metadata', type: 'text' },
     ];
 
     let addedCount = 0;

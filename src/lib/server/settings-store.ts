@@ -169,7 +169,7 @@ const DEFAULT_SETTINGS: Omit<CachedSettings, 'lastUpdated'> = {
   r2BucketName: "",
   r2BrandingBucketName: "",
   r2BrandingPublicUrl: "",
-  otpVerificationEnabled: false,
+  otpVerificationEnabled: true,
   turnstileSiteKey: "",
   turnstileSecretKey: "",
   logoUrlDark: "/branding/logos/default-dark-logo.png?v=20261016", // Default fallback for dark mode
@@ -338,7 +338,7 @@ class SettingsStore {
         r2BucketName: cloudStorageSettings.r2_bucket_name || DEFAULT_SETTINGS.r2BucketName,
         r2BrandingBucketName: cloudStorageSettings.r2_branding_bucket_name || DEFAULT_SETTINGS.r2BrandingBucketName,
         r2BrandingPublicUrl: cloudStorageSettings.r2_branding_public_url || DEFAULT_SETTINGS.r2BrandingPublicUrl,
-        otpVerificationEnabled: generalSettings.otp_verification_enabled === 'true',
+        otpVerificationEnabled: generalSettings.otp_verification_enabled !== 'false',
         turnstileSiteKey: securitySettings.turnstile_site_key || DEFAULT_SETTINGS.turnstileSiteKey,
         turnstileSecretKey: securitySettings.turnstile_secret_key || DEFAULT_SETTINGS.turnstileSecretKey,
         logoUrlDark: brandingDarkFile?.url || DEFAULT_SETTINGS.logoUrlDark,
