@@ -7,10 +7,14 @@
   let {
     class: className = "",
     alt = "App Logo",
+    fallbackSrcDark = "/branding/logos/default-dark-logo.png",
+    fallbackSrcLight = "/branding/logos/default-light-logo.png",
     fallbackSrc = "/branding/logos/default-dark-logo.png",
   }: {
     class?: string;
     alt?: string;
+    fallbackSrcDark?: string;
+    fallbackSrcLight?: string;
     fallbackSrc?: string;
   } = $props();
 
@@ -18,15 +22,15 @@
   const settingsState = getContext<SettingsState>("settings");
 
   // Get logo dimensions from settings
-  const logoWidth = $derived(() => settingsState?.logoWidth ?? "170");
-  const logoHeight = $derived(() => settingsState?.logoHeight ?? "27");
+  const logoWidth = $derived(() => settingsState?.logoWidth ?? "140");
+  const logoHeight = $derived(() => settingsState?.logoHeight ?? "34");
 
   // Compute final CSS classes and inline styles
   const logoStyles = $derived(
     () => `width: ${logoWidth()}px; height: ${logoHeight()}px;`
   );
   const logoClasses = $derived(() =>
-    `object-contain rounded-lg ${className}`.trim()
+    `object-contain ${className}`.trim()
   );
 
   // Determine the logo URL based on current theme
@@ -34,9 +38,9 @@
     const currentMode = mode.current;
 
     if (currentMode === "dark") {
-      return settingsState?.logoUrlDark || fallbackSrc;
+      return settingsState?.logoUrlDark || fallbackSrcDark || fallbackSrc;
     } else {
-      return settingsState?.logoUrlLight || fallbackSrc;
+      return settingsState?.logoUrlLight || fallbackSrcLight;
     }
   });
 
@@ -69,7 +73,7 @@
   }
 
   // Final image source - use fallback if there's an error
-  const finalSrc = $derived(imageError ? fallbackSrc : logoUrl());
+  const finalSrc = $derived(imageError ? (mode.current === "dark" ? fallbackSrcDark : fallbackSrcLight) : logoUrl());
 </script>
 
 <div class="relative">

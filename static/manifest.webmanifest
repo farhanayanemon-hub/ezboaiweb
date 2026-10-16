@@ -1,13 +1,13 @@
 {
-  "name": "XBrainPro",
-  "short_name": "XBrainPro",
-  "description": "XBrainPro \u2013 your AI workspace",
+  "name": "EzboAI",
+  "short_name": "EzboAI",
+  "description": "EzboAI \u2013 The All-in-One AI Studio",
   "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#0a0a0a",
-  "theme_color": "#DC33B8",
+  "background_color": "#09090b",
+  "theme_color": "#8b5cf6",
   "categories": [
     "productivity",
     "utilities"
@@ -30,11 +30,6 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
-    },
-    {
-      "src": "/xbrain-icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml"
     }
   ]
 }

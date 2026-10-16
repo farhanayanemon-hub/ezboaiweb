@@ -174,8 +174,8 @@ const DEFAULT_SETTINGS: Omit<CachedSettings, 'lastUpdated'> = {
   turnstileSecretKey: "",
   logoUrlDark: "/branding/logos/default-dark-logo.png", // Default fallback for dark mode
   logoUrlLight: "/branding/logos/default-light-logo.png", // Default fallback for light mode
-  logoWidth: "170", // Default logo width in pixels
-  logoHeight: "27", // Default logo height in pixels
+  logoWidth: "140", // Default logo width in pixels
+  logoHeight: "34", // Default logo height in pixels
   currentFavicon: null // Default no custom favicon
 };
 
