@@ -172,11 +172,11 @@ const DEFAULT_SETTINGS: Omit<CachedSettings, 'lastUpdated'> = {
   otpVerificationEnabled: false,
   turnstileSiteKey: "",
   turnstileSecretKey: "",
-  logoUrlDark: "/branding/logos/default-dark-logo.png", // Default fallback for dark mode
-  logoUrlLight: "/branding/logos/default-light-logo.png", // Default fallback for light mode
+  logoUrlDark: "/branding/logos/default-dark-logo.png?v=20261016", // Default fallback for dark mode
+  logoUrlLight: "/branding/logos/default-light-logo.png?v=20261016", // Default fallback for light mode
   logoWidth: "140", // Default logo width in pixels
   logoHeight: "34", // Default logo height in pixels
-  currentFavicon: null // Default no custom favicon
+  currentFavicon: "/branding/favicon/default-favicon.png?v=20261016" // Default custom favicon
 };
 
 class SettingsStore {

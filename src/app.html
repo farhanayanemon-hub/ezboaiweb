@@ -10,8 +10,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="EzboAI" />
 <meta name="application-name" content="EzboAI" />
-<link rel="manifest" href="/manifest.webmanifest" />
-<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<link rel="manifest" href="/manifest.webmanifest?v=20261016" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20261016" />
 %sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover" class="font-inter">
@@ -19,7 +19,9 @@
 	<script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function () {
-      navigator.serviceWorker.register('/sw.js').catch(function () {});
+      navigator.serviceWorker.register('/sw.js?v=20261016').then(function (reg) {
+        reg.update();
+      }).catch(function () {});
     });
   }
 </script>

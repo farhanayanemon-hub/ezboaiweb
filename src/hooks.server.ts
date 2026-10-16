@@ -72,7 +72,7 @@ const paraglideHandle: Handle = ({ event, resolve }) =>
         let transformedHtml = html.replace('%lang%', locale);
 
         // Replace favicon placeholder with dynamic or fallback favicon
-        const faviconUrl = event.locals.settings?.currentFavicon || '/branding/favicon/default-favicon.png';
+        const faviconUrl = event.locals.settings?.currentFavicon || '/branding/favicon/default-favicon.png?v=20261016';
         transformedHtml = transformedHtml.replace('%favicon%', faviconUrl);
 
         return transformedHtml;

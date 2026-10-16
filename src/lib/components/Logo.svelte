@@ -6,10 +6,9 @@
   // Props
   let {
     class: className = "",
-    alt = "App Logo",
+    alt = "EzboAI",
     fallbackSrcDark = "/branding/logos/default-dark-logo.png",
     fallbackSrcLight = "/branding/logos/default-light-logo.png",
-    fallbackSrc = "/branding/logos/default-dark-logo.png",
   }: {
     class?: string;
     alt?: string;
@@ -21,80 +20,47 @@
   // Get settings from context (provided by layout)
   const settingsState = getContext<SettingsState>("settings");
 
-  // Get logo dimensions from settings
-  const logoWidth = $derived(() => settingsState?.logoWidth ?? "140");
-  const logoHeight = $derived(() => settingsState?.logoHeight ?? "34");
+  // Logo dimensions (responsive and aspect-ratio preserving)
+  const logoWidth = $derived(settingsState?.logoWidth ? `${settingsState.logoWidth}px` : "140px");
+  const logoHeight = $derived(settingsState?.logoHeight ? `${settingsState.logoHeight}px` : "34px");
 
-  // Compute final CSS classes and inline styles
   const logoStyles = $derived(
-    () => `width: ${logoWidth()}px; height: ${logoHeight()}px;`
-  );
-  const logoClasses = $derived(() =>
-    `object-contain ${className}`.trim()
+    `max-width: ${logoWidth}; max-height: ${logoHeight}; width: auto; height: auto; object-fit: contain;`
   );
 
-  // Determine the logo URL based on current theme
-  const logoUrl = $derived(() => {
-    const currentMode = mode.current;
+  const logoClasses = $derived(
+    `inline-block ${className}`.trim()
+  );
 
-    if (currentMode === "dark") {
-      return settingsState?.logoUrlDark || fallbackSrcDark || fallbackSrc;
-    } else {
-      return settingsState?.logoUrlLight || fallbackSrcLight;
+  let hasError = $state(false);
+
+  // Determine logo URL reactively with cache busting query param
+  const currentSrc = $derived.by(() => {
+    const isDark = mode.current === "dark";
+    if (hasError) {
+      return isDark ? fallbackSrcDark : fallbackSrcLight;
     }
+    const base = isDark
+      ? (settingsState?.logoUrlDark || fallbackSrcDark)
+      : (settingsState?.logoUrlLight || fallbackSrcLight);
+    
+    // Append version query param to prevent browser caching stale logos
+    return base.includes('?') ? base : `${base}?v=20261016`;
   });
-
-  // Error handling state
-  let imageError = $state(false);
-  let isLoading = $state(true);
-  let lastLoadedUrl = $state<string>("");
-
-  // Reset error state when URL changes, but only trigger loading for actual URL changes
-  $effect(() => {
-    const currentUrl = logoUrl();
-    if (currentUrl && currentUrl !== lastLoadedUrl) {
-      imageError = false;
-      isLoading = true;
-    } else if (currentUrl === lastLoadedUrl && lastLoadedUrl !== "") {
-      // Same URL as already loaded, don't show loading state
-      isLoading = false;
-    }
-  });
-
-  function handleImageLoad() {
-    isLoading = false;
-    lastLoadedUrl = logoUrl();
-  }
 
   function handleImageError() {
-    imageError = true;
-    isLoading = false;
-    lastLoadedUrl = logoUrl();
+    if (!hasError) {
+      hasError = true;
+    }
   }
-
-  // Final image source - use fallback if there's an error
-  const finalSrc = $derived(imageError ? (mode.current === "dark" ? fallbackSrcDark : fallbackSrcLight) : logoUrl());
 </script>
 
-<div class="relative">
-  <!-- Logo image -->
-  <img
-    src={finalSrc}
-    {alt}
-    style={logoStyles()}
-    class={`${logoClasses()} ${isLoading ? "opacity-0" : "opacity-100"} transition-opacity duration-200`}
-    onload={handleImageLoad}
-    onerror={handleImageError}
-  />
-
-  <!-- Loading placeholder - positioned absolutely to match image exactly -->
-  {#if isLoading}
-    <div
-      style={logoStyles()}
-      class={`absolute inset-0 bg-muted animate-pulse ${logoClasses()}`}
-      aria-label="Loading logo"
-    >
-      <div class="w-full h-full bg-muted-foreground/20 rounded-lg"></div>
-    </div>
-  {/if}
-</div>
+<img
+  src={currentSrc}
+  {alt}
+  style={logoStyles}
+  class={logoClasses}
+  loading="eager"
+  decoding="async"
+  onerror={handleImageError}
+/>

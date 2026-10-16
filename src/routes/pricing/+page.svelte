@@ -1,10 +1,4 @@
 <script lang="ts">
-  const showPrimaryCta = $derived(
-    data.activePaymentProvider !== "opaybd" || data.userCountry === "BD",
-  );
-
-  // Effective primary gateway per user currency: BDT → opaybd, others → manual
-
   import Button from "$lib/components/ui/button/button.svelte";
   import { Badge } from "$lib/components/ui/badge/index.js";
   import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
@@ -29,6 +23,10 @@
   } from "$lib/utils/currencies.js";
 
   let { data } = $props();
+
+  const showPrimaryCta = $derived(
+    data.activePaymentProvider !== "opaybd" || data.userCountry === "BD",
+  );
 
   const allPlans = data.plans || [];
   const currentSubscription = data.currentSubscription;
